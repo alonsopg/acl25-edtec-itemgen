@@ -1,0 +1,1350 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Edtec-ItemGen</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  <style type="text/css">
+    .navbar-brand {
+      font-size: 1.5rem;
+    }
+
+    #input-search {
+      background: url(images/search.svg);
+      background-repeat: no-repeat;
+      background-position: 10px center;
+      padding-left: 35px;
+    }
+
+    .query-pills {
+      cursor: pointer;
+    }
+
+    .card-question {
+      cursor: pointer;
+    }
+
+    .card-question.highlighted {
+      background-color: #d1e7dd;
+      border-color: #198754;
+      color: #198754;
+    }
+
+    .card-question.highlighted-flag {
+      background-color: #e7d1d5;
+      border-color: #87191e;
+      color: #87191e;
+    }
+
+    .card-question .card {
+      background-color: transparent;
+    }
+
+    .errorMs {
+      width: 100%;
+      margin-top: .25rem;
+      font-size: .875em;
+      color: var(--bs-form-invalid-color);
+    }
+
+    .stars-container {
+      width: fit-content;
+    }
+
+    .delete-question {
+      cursor: pointer;
+    }
+
+    .bracket {
+      /* background-image: url(images/bracket.jpeg);
+      background-position: right;
+      background-size: contain;
+      background-repeat: no-repeat; */
+      height: 300px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      /* width: 300px; */
+      /* padding: 10px; */
+      /* border: 1px solid #ddd; */
+      position: relative;
+      /* font-size: 16px; */
+    }
+
+    .scroll-bracket {
+      overflow-y: scroll;
+      height: 100%;
+    }
+
+    .scroll-bracket::-webkit-scrollbar {
+      display: none;
+    }
+
+    .passage {
+      transition: width 0.35s ease;
+      overflow: hidden;
+      padding: 0;
+    }
+
+    .question {
+      transition: width 0.35s ease;
+    }
+
+    .passage.hide {
+      width: 0;
+      height: 0;
+    }
+
+    .question.full {
+      width: 100%;
+    }
+
+    .llm-op {
+      cursor: pointer;
+    }
+
+    .selected-llm-op {
+      background-color: #e7e7e7;
+    }
+
+    .pill-answer {
+      border-radius: 20px;
+      border: 1px solid #dbd4d4;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .pill-answer.correct {
+      border: 4px solid black;
+    }
+
+    .highlightText .highlight {
+      font-weight: bold;
+      background-color: yellow;
+    }
+
+    .img-loader {
+      height: fit-content;
+      position: absolute;
+      margin: auto;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    .red-flag {
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+    }
+
+    #questions-modal {
+      height: calc(100vh - 350px);
+      overflow-y: scroll;
+    }
+
+    .border-card-passage,
+    .border-card-info {
+      border: none;
+    }
+
+    @media (min-width: 768px) {
+      .border-card-passage {
+        border-right: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+      }
+    }
+
+    @media (min-width: 992px) {
+      .border-card-info {
+        border-right: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+      }
+    }
+
+    /*steps*/
+    #buttons-steps-container {
+      position: absolute;
+      z-index: 99999;
+      top: 3rem;
+      right: 10rem;
+    }
+
+    #bg-steps {
+      top: 0;
+      background-color: #000000bf;
+      width: 100%;
+      height: 100%;
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 9;
+    }
+
+    .visible {
+      position: relative;
+      z-index: 99;
+    }
+
+    .disable-element {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    .next-step,
+    .skip-step {
+      box-shadow: 0px 0px 21px 0px #757575;
+    }
+
+    .popup-step[data-step="0"] {
+      position: absolute;
+      z-index: 10;
+      background: #f1efef;
+      width: 80%;
+      max-width: 400px;
+      height: fit-content;
+      margin: auto;
+      right: 0;
+      left: 0;
+      bottom: 0;
+      top: 0;
+    }
+
+    .container-step.show {
+      z-index: 10;
+      position: relative;
+    }
+
+    .popover {
+      background-color: #f1efef;
+      --bs-popover-bg: #f1efef;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="buttons-steps-container">
+    <button type="button" class="btn btn-info btn-lg next-step">Next</button>
+    <button type="button" class="btn btn-dark btn-lg skip-steps">Skip</button>
+  </div>
+  <div class="popup-step p-3" data-step="0">
+    <div class="">
+      <p>Follow the pop-up instructions to learn how to use this tool. You can also close or skip this pop-up at any
+        time.</p>
+    </div>
+  </div>
+
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+      <a class="navbar-brand" href="https://www.dfki.de/en/web/research/research-departments/educational-technology-lab">
+        EdTec-Lab
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse justify-content-between" id="navbarSupportedContent">
+        <div>
+          <a class="navbar-brand" href="about.html">
+            <i class="bi bi-list-ul"></i>
+            <span>About</span>
+          </a>
+          <a class="navbar-brand" href="https://github.com/alonsopg/acl25-edtec-itemgen">
+            <i class="bi bi-github"></i>
+            <span>Code</span>
+          </a>
+        </div>
+        <div>
+          <a href="https://www.dfki.de/en/web" target="_blank">
+            <img src="images/logo2.png" alt="Logo" height="60" class="d-inline-block align-text-top me-2">
+          </a>
+          <a href="https://www.bfz.de/" target="_blank">
+            <img src="images/logo1.avif" alt="Logo" height="60" class="d-inline-block align-text-top">
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <div class="container mt-5 position-relative container-step" data-step="1" id="csv">
+    <div class="alert alert-light alert-dismissible fade show" role="alert">Enter your search query in the text field. The system will then search the VET database for the most relevant documents and automatically generate test items (questions) from the retrieved passages. You can review these items and choose which ones add to the item base.
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <div class="card">
+
+      <div class="card-body">
+        <div class="ps-5 form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="uploadCSV">
+          <label class="form-check-label" for="uploadCSV"><i class="bi bi-upload me-1"></i> Upload CSV</label>
+          <span id="uploadSuccess" class="d-none" style="color: #28a745;">File uploaded</span>
+        </div>
+        <div id="containerUploadSwitch" class="d-none">
+          <input class="form-control" type="file" id="formFile">
+          <div id="fileError" class="errorMs"></div>
+
+        </div>
+        <div class="d-flex">
+          <input class="form-control mt-2" type="search" placeholder="Please type your search query..."
+            aria-label="Search" id="input-search">
+          <div class="ms-4 mt-2">
+            <div class="btn-group">
+              <button type="button" class="btn btn-secondary dropdown-toggle select-llm" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                <img src="./images/ChatGPT.png" class="" width="25" alt="chatGPT"> GPT-4O-MINI
+              </button>
+              <ul class="dropdown-menu">
+                <li class="dropdown-item selected-llm-op llm-op" data-value="gpt-4o-mini" style="font-size: 14px;">
+                  <img src="./images/ChatGPT.png" class="" width="25" alt="chatGPT"> GPT-4O-MINI
+                </li>
+                <li class="dropdown-item llm-op" data-value="GPT-3.5" style="font-size: 14px;">
+                  <img src="./images/ChatGPT.png" class="" width="25" alt="deepSeek"> GPT-3.5
+                </li>
+              </ul>
+              <input type="text" id="llm_version" hidden value="gpt-4o-mini" />
+            </div>
+          </div>
+          <div class="ms-4 mt-2">
+            <button type="button" class="btn btn-primary d-flex" id="submitFile"><i class="bi bi-send me-1"></i>
+              Submit</button>
+          </div>
+        </div>
+        <div class="pt-3" id="badge">
+          <span class="badge rounded-pill text-bg-secondary query-pills" data-query="arbeitssicherheit und gesundheitsschutz">
+            arbeitssicherheit und gesundheitsschutz
+          </span>
+          <span class="badge rounded-pill text-bg-secondary query-pills" data-query="internet-sicherheit">
+            internet-sicherheit
+          </span>
+          <span class="badge rounded-pill text-bg-secondary query-pills" data-query="deutsche sprachkompetenz">
+            deutsche sprachkompetenz
+          </span>
+          <span class="badge rounded-pill text-bg-secondary query-pills" data-query="e-learning und kursbewertung">
+            e-learning und kursbewertung
+          </span>
+          <span class="badge rounded-pill text-bg-secondary query-pills" data-query="einsatz von technologie">
+            einsatz von technologie
+          </span>
+          <span class="badge rounded-pill text-bg-secondary query-pills" data-query="allgemeine mathematische kompetenz">
+            allgemeine mathematische kompetenz
+          </span>
+          <span class="badge rounded-pill text-bg-secondary query-pills" data-query="grundlegende statistiken">
+            grundlegende statistiken
+          </span>
+          <span class="badge rounded-pill text-bg-secondary query-pills" data-query="aufgabenmanagement">
+            aufgabenmanagement
+          </span>
+          <span class="badge rounded-pill text-bg-secondary query-pills" data-query="lager und logistik">
+            lager und logistik
+          </span>
+          <span class="badge rounded-pill text-bg-secondary query-pills" data-query="inhaltserstellung">
+            inhaltserstellung
+          </span>
+        </div>
+        <div id="errorQuery" class="errorMs"></div>
+        
+        
+        <!--<div class="pt-3" id="badge">-->
+        <!--  <span class="badge rounded-pill text-bg-secondary query-pills" data-query="digitaler schutz">-->
+        <!--    digitaler schutz-->
+        <!--  </span>-->
+        <!--  <span class="badge rounded-pill text-bg-secondary query-pills" data-query="einfache datenanalyse">-->
+        <!--    einfache datenanalyse-->
+        <!--  </span>-->
+        <!--  <span class="badge rounded-pill text-bg-secondary query-pills"-->
+        <!--    data-query="kernelemente der unternehmensführung">-->
+        <!--    kernelemente der unternehmensführung-->
+        <!--  </span>-->
+        <!--  <span class="badge rounded-pill text-bg-secondary query-pills" data-query="ökonomische kenntnisse">-->
+        <!--    ökonomische kenntnisse-->
+        <!--  </span>-->
+        <!--  <span class="badge rounded-pill text-bg-secondary query-pills" data-query="unternehmerische fähigkeiten">-->
+        <!--    unternehmerische fähigkeiten-->
+        <!--  </span>-->
+        <!--  <span class="badge rounded-pill text-bg-secondary query-pills" data-query="informationsaufbereitung">-->
+        <!--    informationsaufbereitung-->
+        <!--  </span>-->
+        <!--  <span class="badge rounded-pill text-bg-secondary query-pills"-->
+        <!--    data-query="darstellungs- und vortragsmethoden">-->
+        <!--    darstellungs- und vortragsmethoden-->
+        <!--  </span>-->
+        <!--  <span class="badge rounded-pill text-bg-secondary query-pills" data-query="multikulturelle kompetenz">-->
+        <!--    multikulturelle kompetenz-->
+        <!--  </span>-->
+        <!--  <span class="badge rounded-pill text-bg-secondary query-pills" data-query="damen im berufsleben">-->
+        <!--    damen im berufsleben-->
+        <!--  </span>-->
+        <!--  <span class="badge rounded-pill text-bg-secondary query-pills" data-query="speicher und transportwesen">-->
+        <!--    speicher und transportwesen-->
+        <!--  </span>-->
+        <!--</div>-->
+        <!--<div id="errorQuery" class="errorMs"></div>-->
+
+      </div>
+    </div>
+    <!-- <div class="disable-element" data-step="1"></div> -->
+    <div class="popover bs-popover-auto fade " role="tooltip" id="popover34196" data-popper-placement="bottom"
+      style="position: relative; inset: 0px auto auto 0px; margin: 0px; transform: translate(0px, 10px);" data-step="1">
+      <div class="popover-arrow" style="position: absolute; left: 0px; transform: translate(129px, 0px);"></div>
+      <div class="popover-body">
+        <p>You can select an example query to search and retrieve relevant VET passages (in German).</p>
+      </div>
+    </div>
+    <div class="popover bs-popover-auto fade " role="tooltip" id="" data-popper-placement="bottom"
+      style="width: 100%;right: 15px;left: auto;top: 60%;" data-step="1">
+      <div class="popover-arrow" style="position: absolute; left: 0px; transform: translate(1300%, 0px);"></div>
+      <div class="popover-body">
+        <p>Click on “Search” to find test passages and generate test questions based on them using an LLM.</p>
+      </div>
+    </div>
+
+
+  </div>
+  <div class="container d-none text-center position-relative" style="height: 80vh;" id="loader">
+    <div class="img-loader">
+      <img src="./images/loader.gif" width="100" class="mt-5" />
+      <p class="mt-2">Demo Fork Version Running on 3 CPU...</p>
+    </div>
+
+  </div>
+  <div class="container container-step pt-5 pb-5 d-none" id="results-container" data-step="2"
+    style="background-color: white;">
+    <div class="ps-5 form-check form-switch">
+      <input class="form-check-input" type="checkbox" id="highlightText">
+      <label class="form-check-label" for="highlightText">Key Points</label>
+    </div>
+    <div class="popover bs-popover-auto fade " role="tooltip" id="popover34196" data-popper-placement="bottom"
+      style="position: relative; inset: 0px auto auto 0px; margin: 0px; transform: translate(0px, 10px);" data-step="2">
+      <div class="popover-arrow" style="position: absolute; left: 0px; transform: translate(15px, 0px);"></div>
+      <div class="popover-body">
+        <p>Enable the Highlight option to highlight the key points extracted via MILP-driven KPE in the retrieved
+          passages.</p>
+      </div>
+    </div>
+    <div class="position-relative">
+      <div id="results">
+      </div>
+      <div class="popover bs-popover-auto fade " role="tooltip" id="popover34196" data-popper-placement="bottom"
+        style="width: 100%;right: 0;left: auto;bottom: -45px;top: auto;" data-step="2">
+        <div class="popover-arrow" style="position: absolute; left: 0px; transform: translate(1450%, 0px);"></div>
+        <div class="popover-body">
+          <p>If you notice any inconsistencies in a test item, please flag it by clicking the flag button.</p>
+        </div>
+      </div>
+    </div>
+    <div class="popover bs-popover-auto fade " role="tooltip" id="popover34196" data-popper-placement="bottom"
+      style="position: relative; inset: 0px auto auto 0px; margin: 0px; transform: translate(0px, -25px);"
+      data-step="2">
+      <div class="popover-arrow" style="position: absolute; left: 0px; transform: translate(129px, 0px);"></div>
+      <div class="popover-body">
+        <p>Select test items to add to the VET item bank.</p>
+      </div>
+    </div>
+
+    <div class="pagination pagination-sm justify-content-center" id="pagination-container"></div>
+    <div class="pt-5 text-center">
+      <button type="button" class="btn btn-outline-success" id="continue">Submit</button>
+      <!-- <button type="button" class="btn btn-outline-danger" id="restart">Change query</button>Change Query -->
+    </div>
+
+
+
+  </div>
+
+
+  <div class="modal fade" id="modalCards" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">Selected test items</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="popover bs-popover-auto fade " role="tooltip" id="" data-popper-placement="bottom"
+            style="width: 100%;right: 15px;left: auto;top: -15px" data-step="3">
+            <div class="popover-body">
+              <p>Confirm your selection before updating the item base</p>
+            </div>
+          </div>
+          <div id="questions-modal">
+
+          </div>
+          <div class="popover bs-popover-auto fade " role="tooltip" id="" data-popper-placement="bottom"
+            style="width: 100%;right: 300px;left: auto;top: auto; bottom: 50%;" data-step="3">
+            <div class="popover-arrow" style="position: absolute; left: 0px; transform: translate(1300%, 0px);"></div>
+            <div class="popover-body">
+              <p>Label test objects</p>
+            </div>
+          </div>
+          <div class="popover bs-popover-auto fade " role="tooltip" id="" data-popper-placement="bottom"
+            style="width: 100%;right: 15px;left: auto;top: auto;bottom: 50%;" data-step="3">
+            <div class="popover-arrow" style="position: absolute; left: 0px; transform: translate(1300%, 0px);"></div>
+            <div class="popover-body">
+              <p>Delete selected item</p>
+            </div>
+          </div>
+          <section class="col-12 mb-3 mt-3">
+            <p class="">Please rate the quality of your search:</p>
+            <div class="col-12 container-question question ml">
+              <div class="stars-container">
+                <img class="star" data-id="1" src="./images/star-off.png" />
+                <img class="star" data-id="2" src="./images/star-off.png" />
+                <img class="star" data-id="3" src="./images/star-off.png" />
+                <img class="star" data-id="4" src="./images/star-off.png" />
+                <img class="star" data-id="5" src="./images/star-off.png" />
+                <input class="value-stars" id="stars-value" name="stars-value" hidden="">
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="modal-footer">
+          <div class="mx-auto">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" id="download">Download</button>
+          </div>
+          <div class="popover bs-popover-auto fade " role="tooltip" id="" data-popper-placement="top"
+            style="width: 100%;right: auto;left: 50%;top: auto;bottom: 65px;" data-step="3">
+            <div class="popover-arrow" style="position: absolute; left: 0px; transform: translate(20px, 0px);"></div>
+            <div class="popover-body">
+              <p>Complete your item generation workflow by submitting the selection to the item database</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="bg-steps"></div>
+
+</body>
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"
+  integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+  integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+  integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+  integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script>
+  $(document).ready(function () {
+    cleanUp()
+    let currentStep = 0;
+    let finalData = {
+      'name-CSV': '',
+      'query': '',
+      'selected-items': [],
+      'no-selected-items': [],
+      'feedback': ''
+    };
+    const cardsPerPage = 10;
+    let currentPage = 1;
+    const highlightedCards = new Set();
+    const highlightedCardsFlag = new Set();
+    let data = [];
+    let id;
+    let validFile = null; // To store the valid file
+
+    //Upload csv file
+    $("#formFile").on("change", function (e) {
+      const file = e.target.files[0];
+      const errorContainer = $("#fileError");
+      errorContainer.text(""); // Clear previous error messages
+      validFile = null; // Reset valid file
+
+      if (!file) {
+        return; // No file selected
+      }
+
+      // Validate file type
+      if (file.type !== "text/csv") {
+        errorContainer.text("The uploaded file must be a CSV file.");
+        return;
+      }
+
+      // Read the file content
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        const content = event.target.result;
+        validateCSV(content, file);
+      };
+      reader.readAsText(file);
+    });
+
+    function validateCSV(content, file) {
+      const errorContainer = $("#fileError");
+      const rows = content.split("\n").map((row) => row.trim());
+      const headers = rows[0]?.split(",");
+
+      // Check for a single column named "passages"
+      if (headers.length !== 1 || headers[0].toLowerCase() !== "document") {
+        errorContainer.text("The CSV file must contain exactly one column named 'document'.");
+        validFile = null;
+      } else {
+        errorContainer.text(""); // Clear error if validation passes
+        validFile = file; // Store the valid file
+      }
+    }
+
+    $('.query-pills').on('click', function () {
+      let queryVal = $(this).data('query')
+      $('#input-search').val(queryVal)
+    })
+
+    $(".llm-op").click(function () {
+      $(".llm-op").removeClass("selected-llm-op");
+
+      // Add 'selected' class to the clicked image
+      $(this).addClass("selected-llm-op");
+
+      // Get the selected value and display it
+      let selectedValue = $(this).data("value");
+      $("#llm_version").val(selectedValue);
+      if (selectedValue == 'gpt-4o-mini') {
+        $('.select-llm').html('<img src="./images/ChatGPT.png" class="" width="25" alt="chatGPT"> ChatGPT 40 mini')
+      } else {
+        $('.select-llm').html('<img src="./images/ChatGPT.png" class="" width="25" alt="deepSeek"> ChatGPT 3.5')
+      }
+    });
+
+    $('#input-search').keypress(function (e) {
+      if (e.which == '13') {
+        $("#submitFile").click()
+      }
+    });
+    
+    $("#submitFile").on("click", function () {
+      $('#results').html('')
+      $('#results-container').addClass('d-none')
+      highlightedCards.clear();
+      id = Date.now();
+      var file = $("#formFile")[0].files[0];
+      var formDataFile = new FormData();
+      formDataFile.append("file", file);
+
+      if ($('#uploadCSV').is(":checked")) {
+        if ($('#input-search').val() == '' || $('#llm_version').val() == '' || typeof file === 'undefined') {
+          $('#errorQuery').text('All fields are required')
+          return;
+        };
+      } else {
+        if ($('#input-search').val() == '' || $('#llm_version').val() == '') {
+          $('#errorQuery').text('All fields are required')
+          return;
+        };
+      }
+
+      $('#csv').addClass('d-none')
+      $('#loader').removeClass('d-none')
+
+
+
+      $('#uploadSuccess').addClass('d-none')
+
+
+      if (!file) {
+        fetchSearch('')
+      } else {
+        fetch("https://api.edtec-itemgen.xyz/upload_csv", {
+          method: "POST",
+          body: formDataFile
+        })
+          .then((responseFile) => {
+            if (!responseFile.ok) {
+              throw new Error(`HTTP error! Status: ${responseFile.status}`);
+            }
+            return responseFile.json();
+          })
+          .then((responseFile) => {
+            $('#uploadSuccess').removeClass('d-none')
+            fetchSearch(responseFile.upload_id)
+          })
+          .catch((error) => {
+            // console.error("Error submitting file:", error);
+            alert("An error occurred while submitting the file.");
+          });
+      }
+
+    });
+
+    function fetchSearch(upload_id) {
+      const formData = {};
+      formData.query = $('#input-search').val()
+      formData.id = id;
+      formData.k = 15
+      formData.llm_version = $('#llm_version').val()
+      formData.kpe = true
+      formData.upload_id = upload_id
+      console.log('fomrData', formData)
+
+      fetch("https://api.edtec-itemgen.xyz/search", {
+        method: "POST",
+        body: JSON.stringify(formData),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((responseData) => {
+          $('#loader').addClass('d-none')
+          $('#csv').removeClass('d-none')
+          $('#results-container').removeClass('d-none')
+          data = responseData.results;
+          console.log("data", data)
+          renderCards();
+          renderPagination();
+          finalData['query'] = $('#input-search').val();
+        })
+      // .catch((error) => {
+      //   // console.error("Error submitting file:", error);
+      //   alert("An error occurred while submitting the file.");
+      // });
+    }
+
+    function highlightedText(text) {
+      text = text.replaceAll('{{', '<span class="highlight">').replaceAll('}}', '</span>');
+      return text;
+    }
+    function renderCards() {
+      const start = (currentPage - 1) * cardsPerPage;
+      const end = start + cardsPerPage;
+      const pageData = data.slice(start, end);
+      let isCheck = $('#highlightText').is(":checked") ? 'highlightText' : '';
+      const container = $("#results");
+      container.empty(); // Clear existing cards
+      pageData.forEach((item, index) => {
+        const globalIndex = start + index; // Calculate the global index of the card
+        const isHighlighted = highlightedCards.has(globalIndex) ? "highlighted" : "";
+        const passage = highlightedText(item.highlighted[0])
+        const pillClass = item.model_type == "gpt-4o-mini" ? "text-bg-success" : "text-bg-primary";
+
+        const card = `
+        <div class="col-12 mb-4  p-2 d-flex justify-content-center">
+          <div class="card position-relative " style="width: fit-content">
+              <div class="p-2 row  align-items-center gx-1 card-question ${isHighlighted} align-items-stretch" data-index="${globalIndex}">
+                <div class="col-12 col-md-6 col-lg-4 passage ${isCheck} border-card-passage p-3">
+                  <div class="bracket">
+                      <div class="scroll-bracket">
+                        <div class="">
+                          <div class="">
+                            <p class="card-text">${passage}</p>
+                          </div>
+                        </div>
+                      </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3 border-card-info p-3">
+                  <p><b>Model Type:</b> <span class="badge rounded-pill ${pillClass}">${item.model_type}</span></p>
+                  <p><b>DocId:</b> ${item.docid}</p>
+                  <p class="mb-0"><b>Question Type:</b> <span class="badge rounded-pill text-bg-light" style="background-color: orange !important;!">Multiple-Choice Question</span></p>
+                </div>
+                <div class="col-12 col-md-12 col-lg-5 align-self-center question p-3">
+                  <div class="">
+                      <div class="">
+                        <div class="">
+                          <div class="">
+                            <p class="fw-bold mb-0">Question</p>
+                            <p class="card-text">${item.augmented_gen.question}</p>
+                            <p class="fw-bold mt-3 mb-0">Answers</p>
+                            <div class="">a) ${item.augmented_gen.answers[0]},</div>
+                            <div class="">b) ${item.augmented_gen.answers[1]},</div>
+                            <div class="">c) ${item.augmented_gen.answers[2]},</div>
+                            <div class="">d) ${item.augmented_gen.answers[3]}</div>
+                            <p class="fw-bold mt-3 mb-0">Correct answer</p>
+                            <div class="">${item.augmented_gen.correct_answer}</div>
+                          </div>
+                        </div>
+                      </div>
+                  </div>
+                </div>
+            </div>
+            <button type="button" class="btn btn-light p-1 red-flag"><i class="bi bi-flag-fill" style="color: red;"></i></button>
+          </div>
+        </div>
+      `;
+        container.append(card);
+      });
+
+
+    }
+
+    // Add click event listener to cards
+    $(document).on("click", ".card-question", function () {
+      const cardIndex = parseInt($(this).data("index"));
+      if (highlightedCardsFlag.has(cardIndex)) {
+        highlightedCardsFlag.delete(cardIndex);
+        $(this).removeClass("highlighted-flag");
+      }
+
+      if (highlightedCards.has(cardIndex)) {
+        highlightedCards.delete(cardIndex);
+        $(this).removeClass("highlighted");
+      } else {
+        highlightedCards.add(cardIndex);
+        $(this).addClass("highlighted");
+      }
+    });
+
+    $(document).on('click', '.red-flag', function () {
+      const card = $($(this).siblings(".card-question")[0]);
+      const cardIndex = parseInt(card.data("index"));
+      if (highlightedCards.has(cardIndex)) {
+        highlightedCards.delete(cardIndex);
+        card.removeClass("highlighted");
+      }
+      if (highlightedCardsFlag.has(cardIndex)) {
+        highlightedCardsFlag.delete(cardIndex);
+        card.removeClass("highlighted-flag");
+      } else {
+        highlightedCardsFlag.add(cardIndex);
+        card.addClass("highlighted-flag");
+      }
+    })
+
+    function renderPagination() {
+      const totalPages = Math.ceil(data.length / cardsPerPage);
+      const paginationContainer = $("#pagination-container");
+      paginationContainer.empty(); // Clear existing pagination
+
+      // Previous button
+      paginationContainer.append(`
+      <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
+        <button class="page-link">Previous</button>
+      </li>
+    `);
+
+      // Page number buttons
+      for (let i = 1; i <= totalPages; i++) {
+        paginationContainer.append(`
+        <li class="page-item ${i === currentPage ? "active" : ""}">
+          <button class="page-link">${i}</button>
+        </li>
+      `);
+      }
+
+      // Next button
+      paginationContainer.append(`
+      <li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
+        <button class="page-link">Next</button>
+      </li>
+    `);
+
+      // Add click event listeners to pagination buttons
+      $(".page-link").on("click", function () {
+        const text = $(this).text();
+        if (text === "Previous" && currentPage > 1) {
+          currentPage--;
+        } else if (text === "Next" && currentPage < totalPages) {
+          currentPage++;
+        } else if (!isNaN(text)) {
+          currentPage = parseInt(text);
+        }
+        renderCards();
+        renderPagination();
+      });
+    }
+
+    // ###########
+
+    //modal
+    $('#continue').on('click', function () {
+      $('#questions-modal').html('')
+      console.log(highlightedCards)
+      data.forEach((item, index) => {
+        // const globalIndex = start + index; // Calculate the global index of the card
+        if (highlightedCards.has(index)) {
+          const card = `
+        <div class="card mb-3" >
+              <div class="card-body">
+                <div class="row align-items-center">
+                  <div class="col-12 col-lg-6">
+                    <div class="">
+                      <p class="fw-bold mt-3 mb-0">Question</p>
+                      <p class="card-text">${item.augmented_gen.question}</p>
+                      <p class="fw-bold mt-3 mb-0">Answers</p>
+                      <div class="">a) ${item.augmented_gen.answers[0]},</div>
+                      <div class="">b) ${item.augmented_gen.answers[1]},</div>
+                      <div class="">c) ${item.augmented_gen.answers[2]},</div>
+                      <div class="">d) ${item.augmented_gen.answers[3]}</div>
+                      <p class="fw-bold mt-3 mb-0">Correct answer</p>
+                      <div class="">${item.augmented_gen.correct_answer}</div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-6 col-lg-3 mt-4">
+                    <div class="container-question question ml">
+                      <div class="stars-container">
+                        <img class="star" data-id="1" src="./images/star-off.png" />
+                        <img class="star" data-id="2" src="./images/star-off.png" />
+                        <img class="star" data-id="3" src="./images/star-off.png" />
+                        <img class="star" data-id="4" src="./images/star-off.png" />
+                        <img class="star" data-id="5" src="./images/star-off.png" />
+                        <input class="value-stars question-value-stars-${index}"  name="stars-value" hidden="">
+                      </div>
+                      <p class="mt-3 mb-0">Quality</p>
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-4 col-lg-2 mt-4">
+                    Difficulty:
+                    <div class="form-check ps-0">
+                      <input class="difficulty" type="radio" name="difficulty-${index}" value="easy">
+                      <label class="form-check-label" for="easy">
+                        Easy
+                      </label>
+                    </div>
+                    <div class="form-check ps-0">
+                      <input class="difficulty" type="radio" name="difficulty-${index}" value="medium">
+                      <label class="form-check-label" for="medium">
+                        Medium
+                      </label>
+                    </div>
+                    <div class="form-check ps-0">
+                      <input class="difficulty" type="radio" name="difficulty-${index}" value="hard" >
+                      <label class="form-check-label" for="hard">
+                        Hard
+                      </label>
+                    </div>
+                  </div>
+                  <div class="col-4 col-md-2 col-lg-1 text-end">
+                    <div class="delete-question" data-index="${index}">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="red" class="bi bi-trash3"
+                        viewBox="0 0 16 16">
+                        <path
+                          d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+      `;
+          $('#questions-modal').append(card);
+        }
+
+
+      });
+      modal.show()
+    })
+
+    //delete element from modal
+    $(document).on('click', '.delete-question', function () {
+      var dataIndex = $(this).attr('data-index');
+      highlightedCards.delete(Number(dataIndex));
+      $(this).parent().parent().parent().parent().remove(),
+        console.log('highlightedCards en delete', highlightedCards)
+      renderCards();
+      renderPagination();
+    })
+
+    //Download
+    $('#download').on('click', function () {
+      let selected = [];
+      let noSelected = [];
+      let flagged = [];
+      console.log(highlightedCards)
+      data.forEach((item, index) => {
+        if (highlightedCards.has(index)) {
+          item['score'] = $(`.question-value-stars-${index}`).val();
+          item['difficulty'] = $(`input[name='difficulty-${index}']:checked`).val();
+          selected.push(item)
+        } else if (highlightedCardsFlag.has(index)) {
+          flagged.push(item)
+        } else {
+          noSelected.push(item)
+        }
+      })
+      finalData['selected-items'] = selected;
+      finalData['no-selected-items'] = noSelected;
+      finalData['flagged'] = flagged;
+      finalData['feedback'] = $('#stars-value').val();
+      finalData['id'] = id;
+      console.log('finalData', finalData)
+
+      // fetch(/UIresponse, {
+      //   method: "POST",
+      //   body: finalData,
+      // })
+      //   .then((response) => {
+      //     if (!response.ok) {
+      //       throw new Error(`HTTP error! Status: ${response.status}`);
+      //     }
+      //     return response.json();
+      //   })
+      //   .then((responseData) => {
+      // 
+      //   })
+      //   .catch((error) => {
+      //     console.error("Error submitting file:", error);
+      //     alert("An error occurred while submitting the file.");
+      //   });}
+
+      // Convert JSON to string format
+      const jsonString = JSON.stringify(finalData, null, 4); // Pretty print
+
+      // Create a Blob with the JSON data
+      const blob = new Blob([jsonString], { type: "text/plain" });
+
+      // Create a link to download the file
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "data.txt"; // File name
+      a.style.display = "none";
+
+      // Append the link to the body and trigger click
+      document.body.appendChild(a);
+      a.click();
+
+      // Clean up
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      cleanUp()
+    })
+
+    //Stars
+    function setStarsAccordingToValue(val, self) {
+      var valueSplit = val.toString().split(".")
+      if (valueSplit.length == 1) {
+        for (var i = 1; i <= valueSplit[0]; i++) {
+          self.find("[data-id='" + i + "']").attr("src", "./images/star-on.png")
+        }
+      } else {
+        for (var i = 1; i <= valueSplit[0]; i++) {
+          self.find("[data-id='" + i + "']").attr("src", "./images/star-half.png")
+        }
+        var id = parseInt(valueSplit[0]) + 1
+        self.find("[data-id='" + id + "']").attr("src", "./images/star-off.png")
+      }
+    }
+    $(document).on("mousemove", ".star", function (e) {
+      var startNo = $(this).attr("data-id")
+      var positionX = e.pageX - $(this).offset().left;
+      $(this).parent(".stars-container").find(".star").attr("src", "./images/star-off.png")
+      for (var i = 1; i <= startNo - 1; i++) {
+        $(this).siblings("[data-id='" + i + "']").attr("src", "./images/star-on.png")
+      }
+      if (positionX < 3) {
+        $(this).attr("src", "./images/star-off.png")
+      } else if (positionX < 12) {
+        $(this).attr("src", "./images/star-half.png")
+      } else {
+        $(this).attr("src", "./images/star-on.png")
+      }
+    })
+    //##########
+    $(document).on("click", ".star", function (e) {
+      var positionX = e.pageX - $(this).offset().left;
+      var value = $(this).attr("data-id");
+      $(this).parent().parent().removeClass('error');
+      if (positionX < 12) {
+        value = value - 0.5
+      }
+      $(this).siblings(".value-stars").val(value);
+
+      setStarsAccordingToValue(value, $(this))
+    })
+
+    $(document).on("mouseleave", ".stars-container", function () {
+      var valueSplit = $(this).find(".value-stars").val()
+      $(this).find(".star").attr("src", "./images/star-off.png")
+      setStarsAccordingToValue(valueSplit, $(this))
+    })
+    $(document).on("mouseenter", ".stars-container", function () {
+      $(this).find(".star").attr("src", "./images/star-off.png")
+    })
+
+
+
+    // Stars
+    function setStarsAccordingToValue(val, self) {
+      var valueSplit = val.toString().split(".")
+      if (valueSplit.length == 1) {
+        for (var i = 1; i <= valueSplit[0]; i++) {
+          self.find("[data-id='" + i + "']").attr("src", "./images/star-on.png")
+        }
+      } else {
+        for (var i = 1; i <= valueSplit[0]; i++) {
+          self.find("[data-id='" + i + "']").attr("src", "./images/star-on.png")
+        }
+        var id = parseInt(valueSplit[0]) + 1
+        self.find("[data-id='" + id + "']").attr("src", "./images/star-half.png")
+      }
+    }
+    $(document).on("mousemove", ".star", function (e) {
+      var startNo = $(this).attr("data-id")
+      var positionX = e.pageX - $(this).offset().left;
+      $(this).parent(".stars-container").find(".star").attr("src", "./images/star-off.png")
+      for (var i = 1; i <= startNo - 1; i++) {
+        $(this).siblings("[data-id='" + i + "']").attr("src", "./images/star-on.png")
+      }
+      if (positionX < 3) {
+        $(this).attr("src", "./images/star-off.png")
+      } else if (positionX < 12) {
+        $(this).attr("src", "./images/star-half.png")
+      } else {
+        $(this).attr("src", "./images/star-on.png")
+      }
+    })
+    $(document).on("click", ".star", function (e) {
+      var positionX = e.pageX - $(this).offset().left;
+      var value = $(this).attr("data-id");
+      $(this).parent().parent().removeClass('error');
+      if (positionX < 12) {
+        value = value - 0.5
+      }
+      $(this).siblings(".value-stars").val(value);
+      // if(value > 1 ){
+      //    $(this).parent().parent().siblings('.select-text').show();
+      //    $(this).parent().parent().siblings('.select-text.container-question').addClass('question');
+      //    $(this).parent().parent().parent().siblings('.box').addClass('argument clickable');
+      // }else{
+      //    $(this).parent().parent().siblings('.select-text').hide();
+      //    $(this).parent().parent().siblings('.select-text.container-question').removeClass('question');
+      //    $(this).parent().parent().siblings('.select-text.container-question').find('input').val('');
+      //    $(this).parent().parent().siblings('.list-selected').html('');
+      //    $(this).parent().parent().parent().siblings('.box').removeClass('argument clickable');
+      // }
+      setStarsAccordingToValue(value, $(this))
+    })
+
+    $(document).on("mouseleave", ".stars-container", function () {
+      var valueSplit = $(this).find(".value-stars").val()
+      $(this).find(".star").attr("src", "./images/star-off.png")
+      setStarsAccordingToValue(valueSplit, $(this))
+    })
+    $(document).on("mouseenter", ".stars-container", function () {
+      $(this).find(".star").attr("src", "./images/star-off.png")
+    })
+
+    // end Stars
+
+    //Modal
+    let myModalEl = document.querySelector('#modalCards')
+    let modal = new bootstrap.Modal(myModalEl)
+    //modal.show()
+    //#####
+
+    //Show/hide upload csv
+    $('#uploadCSV').on('change', function () {
+      $('#containerUploadSwitch').toggleClass('d-none')
+      $('#badge').toggleClass('d-none')
+      $("#input-search").val('')
+      $("#formFile").val('')
+      $('#uploadSuccess').addClass('d-none')
+      $('#fileError').html('')
+      // $('.select-llm').html('LLM')
+      // $('.dropdown-toggle').toggleClass('d-none')
+      // if ($('#uploadCSV').is(":checked")) {
+      //   $("#llm_version").val('GPT-3.5')
+      // } else {
+      //   $("#llm_version").val('gpt-4o-mini  ')
+      // }
+    })
+
+    //Show/hide all info
+    $('#highlightText').on('change', function () {
+      $('.passage').toggleClass('highlightText')
+    })
+
+
+    //Steps
+    $('.skip-steps').on('click', function () {
+      $('.disable-element').addClass('d-none')
+      $('#buttons-steps-container').remove()
+      $('#bg-steps').remove()
+      $('.popup-step').remove()
+      $('.popover').remove()
+      $('#results').html('')
+      $('.container-step').addClass('d-none')
+      $('.container-step[data-step="1"]').removeClass('d-none')
+    })
+
+    $('.next-step').on('click', function () {
+      data = [{
+        "augmented_gen": {
+          "answers": [
+            "Volkswirtschaftslehre (VWL)",
+            "Betriebswirtschaftslehre (BWL)",
+            "Rechtswissenschaften",
+            "Sozialwissenschaften"
+          ],
+          "correct_answer": "Volkswirtschaftslehre (VWL)",
+          "evaluation": "korrekt",
+          "question": "Was ist wichtig zu verstehen, dass diese beiden disziplinen nicht zu den rechtsswissenschaften gehören, sondern eigensändige bereiche der wirtschaftswissenschaften sind?"
+        },
+        "content": "8. Welche Aussagen sind richtig, welche falsch? Volkswirtschaftslehre und Betriebswirtschaftslehre gehören zu den Rechtswissenschaften. Volkswirtschaftslehre und Betriebswirtschaftslehre gehören zu den Rechtswissenschaften. Die Volkswirtschaftslehre befasst sich mit einzelwirtschaftlichen Prozessen. Die Volkswirtschaftslehre befasst sich mit einzelwirtschaftlichen Prozessen. Die Betriebswirtschaftslehre befasst sich mit den gesamtwirtschaftlichen Prozessen. Die Betriebswirtschaftslehre befasst sich mit den gesamtwirtschaftlichen Prozessen. Betriebe sind planvoll organisierte Wirtschaftseinheiten, die Güter und Dienstleistungen erstellen und absetzen. Betriebe sind planvoll organisierte Wirtschaftseinheiten, die Güter und Dienstleistungen erstellen und absetzen. Die Volkswirtschaftslehre untersucht das Zusammenspiel der Sektoren \"Unternehmen\", \"Haushalte\", \"Staat\" und \"Ausland\". Die Volkswirtschaftslehre untersucht das Zusammenspiel der Sektoren \"Unternehmen\", \"Haushalte\", \"Staat\" und \"Ausland\".",
+        "docid": 1624,
+        "highlighted": [
+          "wirtschaftswissen ist ein zentraler bestandteil der wirtschaftlichen bildung, der sowohl die volkswirtschaftslehre als auch die betriebswirtschaftslehre umfasst.. {{es ist wichtig zu verstehen, dass diese beiden disziplinen nicht zu den rechtswissenschaften gehören, sondern eigenständige bereiche der wirtschaftswissenschaften sind.}}. {{die volkswirtschaftslehre (vwl) beschäftigt sich mit gesamtwirtschaftlichen prozessen und untersucht das zusammenspiel der verschiedenen sektoren einer volkswirtschaft, einschließlich unternehmen, haushalten, staat und ausland.}}. {{sie analysiert, wie ressourcen verteilt werden und wie wirtschaftliche entscheidungen das wohlergehen der gesellschaft beeinflussen.}}. {{im gegensatz dazu fokussiert sich die betriebswirtschaftslehre (bwl) auf die planung und organisation von betrieben, die als planvoll organisierte wirtschaftseinheiten güter und dienstleistungen produzieren und bereitstellen.}}. {{die bwl befasst sich mit den internen abläufen in unternehmen, einschließlich finanzmanagement, marketing und personalwesen.}}. {{für studierende ist es entscheidend, die unterschiede und zusammenhänge zwischen vwl und bwl zu verstehen, um wirtschaftliche fragestellungen umfassend analysieren und beantworten zu können.}}. {{vor prüfungen sollten wichtige begriffe, konzepte und die grundlegenden prinzipien beider disziplinen gründlich durchgearbeitet werden.}}."
+        ],
+        "key_points": [
+          "es ist wichtig zu verstehen, dass diese beiden disziplinen nicht zu den rechtswissenschaften gehören, sondern eigenständige bereiche der wirtschaftswissenschaften sind.",
+          "die volkswirtschaftslehre (vwl) beschäftigt sich mit gesamtwirtschaftlichen prozessen und untersucht das zusammenspiel der verschiedenen sektoren einer volkswirtschaft, einschließlich unternehmen, haushalten, staat und ausland.",
+          "sie analysiert, wie ressourcen verteilt werden und wie wirtschaftliche entscheidungen das wohlergehen der gesellschaft beeinflussen.",
+          "im gegensatz dazu fokussiert sich die betriebswirtschaftslehre (bwl) auf die planung und organisation von betrieben, die als planvoll organisierte wirtschaftseinheiten güter und dienstleistungen produzieren und bereitstellen.",
+          "die bwl befasst sich mit den internen abläufen in unternehmen, einschließlich finanzmanagement, marketing und personalwesen.",
+          "für studierende ist es entscheidend, die unterschiede und zusammenhänge zwischen vwl und bwl zu verstehen, um wirtschaftliche fragestellungen umfassend analysieren und beantworten zu können.",
+          "vor prüfungen sollten wichtige begriffe, konzepte und die grundlegenden prinzipien beider disziplinen gründlich durchgearbeitet werden."
+        ],
+        "kpe": "True",
+        "model_type": "gpt-4o-mini",
+        "passage": "wirtschaftswissen ist ein zentraler bestandteil der wirtschaftlichen bildung, der sowohl die volkswirtschaftslehre als auch die betriebswirtschaftslehre umfasst. es ist wichtig zu verstehen, dass diese beiden disziplinen nicht zu den rechtswissenschaften gehören, sondern eigenständige bereiche der wirtschaftswissenschaften sind.   die volkswirtschaftslehre (vwl) beschäftigt sich mit gesamtwirtschaftlichen prozessen und untersucht das zusammenspiel der verschiedenen sektoren einer volkswirtschaft, einschließlich unternehmen, haushalten, staat und ausland. sie analysiert, wie ressourcen verteilt werden und wie wirtschaftliche entscheidungen das wohlergehen der gesellschaft beeinflussen.  im gegensatz dazu fokussiert sich die betriebswirtschaftslehre (bwl) auf die planung und organisation von betrieben, die als planvoll organisierte wirtschaftseinheiten güter und dienstleistungen produzieren und bereitstellen. die bwl befasst sich mit den internen abläufen in unternehmen, einschließlich finanzmanagement, marketing und personalwesen.  für studierende ist es entscheidend, die unterschiede und zusammenhänge zwischen vwl und bwl zu verstehen, um wirtschaftliche fragestellungen umfassend analysieren und beantworten zu können. vor prüfungen sollten wichtige begriffe, konzepte und die grundlegenden prinzipien beider disziplinen gründlich durchgearbeitet werden.",
+        "query": "ökonomische kenntnisse",
+        "similarity": 0.6815961599349976
+      }];
+      $('.popup-step').remove()
+      $('.disable-element').remove()
+      $('.container-step[data-step="' + currentStep + '"]').removeClass('show')
+      $('.popover[data-step="' + currentStep + '"]').remove()
+      currentStep += 1;
+      $('[data-step="' + currentStep + '"]').removeClass('d-none')
+      $('[data-step="' + currentStep + '"]').addClass('show')
+      $('.container-step[data-step="' + currentStep + '"]').append('<div class="disable-element" data-step="' + currentStep + '"></div>');
+      modal.hide()
+      if (currentStep == "2") {
+        $('#results-container').removeClass('d-none')
+
+        renderCards();
+        renderPagination();
+      }
+      if (currentStep == "3") {
+        $('#questions-modal').html('')
+        console.log(highlightedCards)
+        data.forEach((item, index) => {
+          // const globalIndex = start + index; // Calculate the global index of the card
+          const card = `
+        <div class="card mb-3" >
+              <div class="card-body">
+                <div class="row align-items-center">
+                  <div class="col-12 col-lg-6">
+                    <div class="">
+                      <p class="fw-bold mt-3 mb-0">Question</p>
+                      <p class="card-text">${item.augmented_gen.question}</p>
+                      <p class="fw-bold mt-3 mb-0">Answers</p>
+                      <div class="">a) ${item.augmented_gen.answers[0]},</div>
+                      <div class="">b) ${item.augmented_gen.answers[1]},</div>
+                      <div class="">c) ${item.augmented_gen.answers[2]},</div>
+                      <div class="">d) ${item.augmented_gen.answers[3]}</div>
+                      <p class="fw-bold mt-3 mb-0">Correct answer</p>
+                      <div class="">${item.augmented_gen.correct_answer}</div>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-6 col-lg-3 mt-4">
+                    <div class="container-question question ml">
+                      <div class="stars-container">
+                        <img class="star" data-id="1" src="./images/star-off.png" />
+                        <img class="star" data-id="2" src="./images/star-off.png" />
+                        <img class="star" data-id="3" src="./images/star-off.png" />
+                        <img class="star" data-id="4" src="./images/star-off.png" />
+                        <img class="star" data-id="5" src="./images/star-off.png" />
+                        <input class="value-stars question-value-stars-${index}"  name="stars-value" hidden="">
+                      </div>
+                      <p class="mt-3 mb-0">Quality</p>
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-4 col-lg-2 mt-4">
+                    Difficulty:
+                    <div class="form-check ps-0">
+                      <input class="difficulty" type="radio" name="difficulty-${index}" value="easy">
+                      <label class="form-check-label" for="easy">
+                        Easy
+                      </label>
+                    </div>
+                    <div class="form-check ps-0">
+                      <input class="difficulty" type="radio" name="difficulty-${index}" value="medium">
+                      <label class="form-check-label" for="medium">
+                        Medium
+                      </label>
+                    </div>
+                    <div class="form-check ps-0">
+                      <input class="difficulty" type="radio" name="difficulty-${index}" value="hard" >
+                      <label class="form-check-label" for="hard">
+                        Hard
+                      </label>
+                    </div>
+                  </div>
+                  <div class="col-4 col-md-2 col-lg-1 text-end">
+                    <div class="delete-question" data-index="${index}">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="red" class="bi bi-trash3"
+                        viewBox="0 0 16 16">
+                        <path
+                          d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+      `;
+          $('#questions-modal').append(card);
+
+
+        });
+        modal.show()
+      }
+      if (currentStep == "4") {
+        $('.disable-element').addClass('d-none')
+        $('#buttons-steps-container').remove()
+        $('#bg-steps').remove()
+        $('#results').html('')
+        $("#results-container").addClass('d-none');
+      }
+    })
+
+    //#####
+
+    //Clean up
+    function cleanUp() {
+      // modal.hide()
+      $('#uploadCSV').prop("checked", false);
+      $('#input-search').val('')
+      $('#formFile').val('')
+      $("#results").html('');
+      $("#csv").removeClass('d-none');
+      $("#results-container").addClass('d-none');
+      $('#highlightText').prop('checked', false);
+      // $('.llm-op').removeClass('selected')
+      // $('#kpe').prop("checked", false);
+    }
+
+    //  //restart
+    //  $('#restart').on('click', function () {
+    //   $("#results").html('');
+    //   $("#csv").removeClass('d-none');
+    //   $("#results-container").addClass('d-none');
+    //   $('#input-search').val('')
+    //   $('#formFile').val('')
+    //   $('#highlightText').prop('checked', true);
+    //   validFile = null;
+    //   highlightedCards.clear();
+
+    // })
+
+  });
+
+</script>
+
+</html>
